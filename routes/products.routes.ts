@@ -1,10 +1,16 @@
 import { Router } from "express";
-import { authMiddleware, adminMiddleware } from "../middleware/aunth.middleware"
-import { createProductController, viewProductController } from "../controller/produc.controller"
+import { authMiddleware } from "../middleware/aunth.middleware"
+import { ollamaMiddleware } from "../middleware/ollama.middleware";
+import { createProductController, viewProductController, updateProductController, deleteProductController } from "../controller/produc.controller"
+import multer from 'multer'
 
 const router = Router()
 
+const upload = multer({ storage: multer.memoryStorage() });
+
 router.post("/view", viewProductController)
-router.post("/create", authMiddleware, createProductController)
+router.post("/create", upload.single('file'), authMiddleware, ollamaMiddleware, createProductController)
+router.post("/update", upload.single('file'), authMiddleware, ollamaMiddleware, updateProductController)
+router.post("/delete", upload.single('file'), authMiddleware, deleteProductController)
 
 export default router;

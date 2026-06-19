@@ -13,11 +13,12 @@ datasource db {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
+  id       Int        @id @default(autoincrement())
   nombre   String
-  email    String @unique
+  email    String     @unique
   password String
   rol      String
+  products Products[]
 }
 
 model Products {
@@ -26,5 +27,7 @@ model Products {
   descripcion String
   precio      Float
   imagen      String?
+  userId      Int
+  user        User                        @relation(fields: [userId], references: [id])
   embedding   Unsupported("vector(768)")?
 }

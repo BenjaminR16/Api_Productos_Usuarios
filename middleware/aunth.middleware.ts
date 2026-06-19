@@ -19,20 +19,21 @@ export function authMiddleware(req: any, res: any, next: any) {
         next();
 
     } catch (e) {
-        return res.status(401).send("token invalido");
+        res.status(401).send("token invalido");
     }
 }
 
-export function adminMiddleware(req: any, res: any, next: any) {
-    const user = req.user;
+//esto mejor en el service prque asi gestinamos mejor
+// export function adminMiddleware(req: any, res: any, next: any) {
+//     const user = req.user;
 
-    if (!user) {
-        return res.status(401).send("No autenticado");
-    }
+//     if (!user) {
+//         return res.status(401).send("No autenticado");
+//     }
 
-    if (user.rol !== "admin") {
-        return res.status(403).send("No tienes permisos de admin");
-    }
+//     if (user.rol !== "admin") {
+//         return res.status(403).send("No tienes permisos de admin");
+//     }
 
-    next();
-}
+//     next();
+// }
