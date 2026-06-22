@@ -2,13 +2,8 @@ import ollama from 'ollama'
 
 export async function ollamaMiddleware(req: any, res: any, next: any) {
 
-    const productos = req.body.productos
-        ? JSON.parse(req.body.productos)
-        : [{
-            nombre: req.body.nombre,
-            descripcion: req.body.descripcion,
-            precio: req.body.precio
-        }]
+    const { nombre, descripcion } = req.body
+    const producto = { nombre, descripcion }
 
     const esquemaJSON = {
         type: 'object',
@@ -18,7 +13,12 @@ export async function ollamaMiddleware(req: any, res: any, next: any) {
             aprobado: { type: 'boolean' },
             motivo: { type: 'string' }
         },
-        required: ['productos']
+        required: [
+            'nombre',
+            'descripcionMejorada',
+            'aprobado',
+            'motivo'
+        ]
     }
 
     try {
@@ -35,7 +35,7 @@ export async function ollamaMiddleware(req: any, res: any, next: any) {
                 },
                 {
                     role: 'user',
-                    content: `Analiza y mejora estos productos: ${JSON.stringify(productos)}`
+                    content: `Analiza y mejora estos productos: ${JSON.stringify(producto)}`
                 }
             ],
             format: esquemaJSON,

@@ -3,6 +3,7 @@ import { PrismaClient } from '../generated/prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg'
 import { createClient } from "@supabase/supabase-js"
 import { GoogleGenAI } from "@google/genai"
+import { getMcpClient } from "../mcp/mcp_client/mcp_client_listaV"
 
 const connectionString = process.env.DATABASE_URL
 const adapter = new PrismaPg({ connectionString })
@@ -15,10 +16,29 @@ const supabase = createClient(
 )
 
 export async function viewProductService() {
-    const viewProducts = await prisma.products.findMany()
+    const client = await getMcpClient();
 
-    return viewProducts
+    const resultado = await client.callTool({
+        name: "listar_productos",
+        arguments: {},
+    });
+
+    const text = (resultado.content as any)?.[0]?.text;
+    return text ? JSON.parse(text) : [];
 }
+
+export async function searchProductsMcp(descripcion: string, limit?: number) {
+    const client = await getMcpClient();
+
+    const resultado = await client.callTool({
+        name: "buscar_productos_semantico",
+        arguments: { descripcion, limit },
+    });
+
+    const text = (resultado.content as any)?.[0]?.text;
+    return text ? JSON.parse(text) : [];
+}
+
 
 
 export async function createProductService(userId: number, nombre: string, descripcion: string, precio: Number, file: any) {
@@ -48,7 +68,7 @@ export async function createProductService(userId: number, nombre: string, descr
         config: { outputDimensionality: 768 }
     })
 
-    //recogemos el valor del vector
+    //recogemos el valor del vector pq se pueden recoger metadatos tambien
     const embedding = createEmbedding.embeddings?.[0]?.values
     if (!embedding) {
         throw new Error("EMBEDDING_FAILED")

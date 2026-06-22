@@ -1,4 +1,4 @@
-import { createProductService, viewProductService, updateProductService, removeProductService } from "../service/product.service"
+import { createProductService, viewProductService, updateProductService, removeProductService, searchProductsMcp } from "../service/product.service"
 
 export async function viewProductController(req: any, res: any) {
     try {
@@ -10,6 +10,20 @@ export async function viewProductController(req: any, res: any) {
     }
 }
 
+export async function semanticSearchController(req: any, res: any) {
+    try {
+        const { query, limit } = req.body
+
+        if (!query) {
+            return res.status(400).send({ error: "Falta el campo 'query'" })
+        }
+
+        const resultado = await searchProductsMcp(query, limit)
+        res.status(200).send(resultado)
+    } catch (error: any) {
+        res.status(400).send(error)
+    }
+}
 
 export async function createProductController(req: any, res: any) {
     try {
