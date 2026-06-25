@@ -50,7 +50,19 @@ export async function userLoginService(email: string, password: string) {
     return { token, user: { id: user.id, nombre: user.nombre, email: user.email, rol: user.rol } }
 }
 
+export async function userProfileService(email: string) {
+    const user = await userExist(email)
+    if (!user) {
+        throw new Error("EMAIL_NOT_EXIST")
+    }
 
+    return {
+        id: user.id,
+        nombre: user.nombre,
+        email: user.email,
+        rol: user.rol
+    }
+}
 
 
 // export async function userExist(email: string) {
